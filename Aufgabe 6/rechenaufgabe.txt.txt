@@ -1,0 +1,20 @@
+F_CPU = 16.000.000 
+ 
+Eigentliche Formel:
+	F_CPU / Prescaler / CompareValue / 2 = Frequency
+	
+CompareValue durch x erstezen:
+	F_CPU / Prescaler / x  / 2= Frequency
+ 
+Nach x auflösen:
+ -> F_CPU / Prescaler / Frequency / 2 = x
+ 
+ F_CPU / 1024 / 440 / 2 = 18   	-> 8 Bit
+ F_CPU /  256 / 440 / 2 = 71   	-> 8 Bit
+ F_CPU /   64 / 440 / 2 = 284  	-> 16 Bit
+ F_CPU /    8 / 440 / 2 = 2272 	-> 16 Bit
+ 
+ F_CPU / 1024 / 262 / 2 = 30  	-> 8 Bit
+ F_CPU /  256 / 262 / 2 = 119  	-> 8 Bit
+ F_CPU /   64 / 262 / 2 = 476 	-> 16 Bit
+ F_CPU /    8 / 262 / 2 = 3808  -> 16 Bit

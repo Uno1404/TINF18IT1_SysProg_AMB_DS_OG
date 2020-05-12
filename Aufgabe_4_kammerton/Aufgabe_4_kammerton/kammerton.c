@@ -36,8 +36,9 @@ void kammerton() {
 	SET_PIN_HIGH(TCCR0A, COM0A1);
 	
 	// set fast PWM Mode
-	SET_PIN_HIGH(TCCR0A, WGM01);
 	SET_PIN_HIGH(TCCR0A, WGM00);
+	SET_PIN_HIGH(TCCR0A, WGM01);
+	SET_PIN_HIGH(TCCR0A, WGM02);
 	
 	// set prescaler and start PWM
 	#if PRESCALER == 8			// set prescaler to 8

@@ -1,9 +1,6 @@
 /*
- * lauflicht_6_bit.c
- *
- * Created: 12.05.2020 17:49:56
- *  Author: MariusAlexander
- */ 
+ *  Author: Broecker, Goel, Seus
+ */
 
 #include "lauflicht_6bit.h"
 

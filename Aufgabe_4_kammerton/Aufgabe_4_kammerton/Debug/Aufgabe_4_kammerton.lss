@@ -1,0 +1,220 @@
+
+Aufgabe_4_kammerton.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000000  00800100  00800100  00000172  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         0000011e  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .comment      00000030  00000000  00000000  00000172  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000001a4  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000058  00000000  00000000  000001e4  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   0000071f  00000000  00000000  0000023c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00000666  00000000  00000000  0000095b  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   000002c9  00000000  00000000  00000fc1  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  000000ac  00000000  00000000  0000128c  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    000003ae  00000000  00000000  00001338  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    000000c1  00000000  00000000  000016e6  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000038  00000000  00000000  000017a7  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 34 00 	jmp	0x68	; 0x68 <__ctors_end>
+   4:	0c 94 40 00 	jmp	0x80	; 0x80 <__vector_1>
+   8:	0c 94 4e 00 	jmp	0x9c	; 0x9c <__vector_2>
+   c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  10:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  14:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  18:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  1c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  20:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  24:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  28:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  2c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  30:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  34:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  38:	0c 94 5c 00 	jmp	0xb8	; 0xb8 <__vector_14>
+  3c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  40:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  44:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  48:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  4c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  50:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  54:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  58:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  5c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  60:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  64:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+
+00000068 <__ctors_end>:
+  68:	11 24       	eor	r1, r1
+  6a:	1f be       	out	0x3f, r1	; 63
+  6c:	cf ef       	ldi	r28, 0xFF	; 255
+  6e:	d8 e0       	ldi	r29, 0x08	; 8
+  70:	de bf       	out	0x3e, r29	; 62
+  72:	cd bf       	out	0x3d, r28	; 61
+  74:	0e 94 8a 00 	call	0x114	; 0x114 <main>
+  78:	0c 94 8d 00 	jmp	0x11a	; 0x11a <_exit>
+
+0000007c <__bad_interrupt>:
+  7c:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000080 <__vector_1>:
+#include "custom_utilities.h"
+
+#include <avr/interrupt.h>
+
+	
+ISR (INT0_vect) {
+  80:	1f 92       	push	r1
+  82:	0f 92       	push	r0
+  84:	0f b6       	in	r0, 0x3f	; 63
+  86:	0f 92       	push	r0
+  88:	11 24       	eor	r1, r1
+  8a:	8f 93       	push	r24
+	OCR0A = KAMMERTON_C;	// PWM for Kammerton C
+  8c:	86 e4       	ldi	r24, 0x46	; 70
+  8e:	87 bd       	out	0x27, r24	; 39
+}
+  90:	8f 91       	pop	r24
+  92:	0f 90       	pop	r0
+  94:	0f be       	out	0x3f, r0	; 63
+  96:	0f 90       	pop	r0
+  98:	1f 90       	pop	r1
+  9a:	18 95       	reti
+
+0000009c <__vector_2>:
+
+ISR (INT1_vect) {
+  9c:	1f 92       	push	r1
+  9e:	0f 92       	push	r0
+  a0:	0f b6       	in	r0, 0x3f	; 63
+  a2:	0f 92       	push	r0
+  a4:	11 24       	eor	r1, r1
+  a6:	8f 93       	push	r24
+	OCR0A = KAMMERTON_A;	// PWM for Kammerton A
+  a8:	88 e7       	ldi	r24, 0x78	; 120
+  aa:	87 bd       	out	0x27, r24	; 39
+}
+  ac:	8f 91       	pop	r24
+  ae:	0f 90       	pop	r0
+  b0:	0f be       	out	0x3f, r0	; 63
+  b2:	0f 90       	pop	r0
+  b4:	1f 90       	pop	r1
+  b6:	18 95       	reti
+
+000000b8 <__vector_14>:
+
+ISR (TIMER0_COMPA_vect)		// timer overflow interrupt
+{
+  b8:	1f 92       	push	r1
+  ba:	0f 92       	push	r0
+  bc:	0f b6       	in	r0, 0x3f	; 63
+  be:	0f 92       	push	r0
+  c0:	11 24       	eor	r1, r1
+  c2:	8f 93       	push	r24
+  c4:	9f 93       	push	r25
+	TOGGLE_PIN(PORTD, OUTPUT_PIN);	//Toggle OUTPUT_PIN
+  c6:	9b b1       	in	r25, 0x0b	; 11
+  c8:	80 e4       	ldi	r24, 0x40	; 64
+  ca:	89 27       	eor	r24, r25
+  cc:	8b b9       	out	0x0b, r24	; 11
+}
+  ce:	9f 91       	pop	r25
+  d0:	8f 91       	pop	r24
+  d2:	0f 90       	pop	r0
+  d4:	0f be       	out	0x3f, r0	; 63
+  d6:	0f 90       	pop	r0
+  d8:	1f 90       	pop	r1
+  da:	18 95       	reti
+
+000000dc <kammerton>:
+
+void kammerton() {
+	// -- PWM --
+	// set pin 6 as output for the pwm
+	SET_PIN_OUTPUT(DDRD, OUTPUT_PIN);
+  dc:	56 9a       	sbi	0x0a, 6	; 10
+	
+	// PWM for Kammerton A
+	OCR0A = KAMMERTON_A;
+  de:	88 e7       	ldi	r24, 0x78	; 120
+  e0:	87 bd       	out	0x27, r24	; 39
+	
+	// set none-inverting mode
+	SET_PIN_HIGH(TCCR0A, COM0A1);
+  e2:	84 b5       	in	r24, 0x24	; 36
+  e4:	80 68       	ori	r24, 0x80	; 128
+  e6:	84 bd       	out	0x24, r24	; 36
+	
+	// set fast PWM Mode
+	SET_PIN_HIGH(TCCR0A, WGM01);
+  e8:	84 b5       	in	r24, 0x24	; 36
+  ea:	82 60       	ori	r24, 0x02	; 2
+  ec:	84 bd       	out	0x24, r24	; 36
+	SET_PIN_HIGH(TCCR0A, WGM00);
+  ee:	84 b5       	in	r24, 0x24	; 36
+  f0:	81 60       	ori	r24, 0x01	; 1
+  f2:	84 bd       	out	0x24, r24	; 36
+	# warning "PRESCALER not propperly defined (8-bit register -> possible PRESCALER values are 8, 64, 256, 1024)"
+	#endif
+	
+	
+	// -- Interrupts --
+	SET_PIN_LOW(DDRD, DDD2);		// Clear the PD2 pin for PD2
+  f4:	52 98       	cbi	0x0a, 2	; 10
+	SET_PIN_LOW(DDRD, DDD3);		// Clear the PD2 pin for PD2
+  f6:	53 98       	cbi	0x0a, 3	; 10
+	
+	SET_PIN_HIGH(PORTD, PORTD2);    // turn On the Pull-up for PD3
+  f8:	5a 9a       	sbi	0x0b, 2	; 11
+	SET_PIN_HIGH(PORTD, PORTD3);    // turn On the Pull-up for PD3
+  fa:	5b 9a       	sbi	0x0b, 3	; 11
+	
+	SET_PIN_HIGH(EICRA, ISC00);			// set INT0 to trigger on ANY logic change
+  fc:	e9 e6       	ldi	r30, 0x69	; 105
+  fe:	f0 e0       	ldi	r31, 0x00	; 0
+ 100:	80 81       	ld	r24, Z
+ 102:	81 60       	ori	r24, 0x01	; 1
+ 104:	80 83       	st	Z, r24
+	SET_PIN_HIGH(EICRA, ISC10);			// set INT1 to trigger on ANY logic change
+ 106:	80 81       	ld	r24, Z
+ 108:	84 60       	ori	r24, 0x04	; 4
+ 10a:	80 83       	st	Z, r24
+	SET_PIN_HIGH(EIMSK, INT0);			// Turns on INT0
+ 10c:	e8 9a       	sbi	0x1d, 0	; 29
+	SET_PIN_HIGH(EIMSK, INT1);			// Turns on INT1
+ 10e:	e9 9a       	sbi	0x1d, 1	; 29
+
+	// turn on interrupts
+	sei();
+ 110:	78 94       	sei
+ 112:	08 95       	ret
+
+00000114 <main>:
+
+	Bei Drücken einer Taste Kammerton A, andere Taste Kammerton C
+*/
+
+int main(void) {
+	kammerton(); 
+ 114:	0e 94 6e 00 	call	0xdc	; 0xdc <kammerton>
+ 118:	ff cf       	rjmp	.-2      	; 0x118 <main+0x4>
+
+0000011a <_exit>:
+ 11a:	f8 94       	cli
+
+0000011c <__stop_program>:
+ 11c:	ff cf       	rjmp	.-2      	; 0x11c <__stop_program>

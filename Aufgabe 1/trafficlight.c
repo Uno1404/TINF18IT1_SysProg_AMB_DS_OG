@@ -17,7 +17,7 @@
 		Dann 100ms Rot-Gelb
 		Dann 1000 Grün
 		Dann 100ms gelb
-		Dann wdh
+		Dann wiederholung
 */
 
 

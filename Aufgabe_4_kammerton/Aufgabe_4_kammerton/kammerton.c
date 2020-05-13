@@ -58,9 +58,9 @@ void kammerton() {
 	
 	// -- Interrupts --
 	SET_PIN_LOW(DDRD, DDD2);		// Clear the PD2 pin for PD2
-	SET_PIN_LOW(DDRD, DDD3);		// Clear the PD2 pin for PD2
+	SET_PIN_LOW(DDRD, DDD3);		// Clear the PD3 pin for PD3
 	
-	SET_PIN_HIGH(PORTD, PORTD2);    // turn On the Pull-up for PD3
+	SET_PIN_HIGH(PORTD, PORTD2);    // turn On the Pull-up for PD2
 	SET_PIN_HIGH(PORTD, PORTD3);    // turn On the Pull-up for PD3
 	
 	SET_PIN_HIGH(EICRA, ISC00);			// set INT0 to trigger on ANY logic change

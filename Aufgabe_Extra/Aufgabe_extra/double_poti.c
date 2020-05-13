@@ -11,10 +11,17 @@ volatile int Button_press = 0;
 uint8_t step = 0;
 
 ISR(ADC_vect) {
+	/*
+		pushing around for 10 Bit
+		to concat bits correctly
+		ADCH		ADCL
+		1111 1111   11
+	*/
 	ADCmeasurement = ADCL | (ADCH << 8);
 }
 
 ISR (INT0_vect) {
+	// toggle on button press
 	Button_press ^= 1;
 }
  
@@ -48,29 +55,34 @@ void init() {
 	    
 	SET_PIN_HIGH(PORTD, PORTD2);    // turn On the Pull-up for PD2
 	    
-	SET_PIN_HIGH(EICRA, ISC00);        // set INT0 to trigger on ANY logic
-	SET_PIN_HIGH(EIMSK, INT0);        // Turns on INT0
+	SET_PIN_HIGH(EICRA, ISC00);     // set INT0 to trigger on ANY logic
+	SET_PIN_HIGH(EIMSK, INT0);      // Turns on INT0
 		
+	// enable interrupts
 	sei();
 
+	// init serial
 	usart_init();
 }
 
-void loop(){
+void loop() {
 	char buffer[10];
 	itoa(ADCmeasurement, buffer, 10);
 	if (step&1){
 		usart_send_string("Poti 1:  ");
+		usart_send_string(buffer);
+		usart_send_string("\n\r");
 	}
 	else{
 		usart_send_string("Poti 2:  ");
+		usart_send_string(buffer);
+		usart_send_string("\n\r");
+		itoa(Button_press, buffer, 10);
+		usart_send_string("\n\rButton: ");
+		usart_send_string(buffer);
 	}
-	usart_send_string(buffer);
-	itoa(Button_press, buffer, 10);
-	usart_send_string("\n\rButton: ");
-	usart_send_string(buffer);
-	usart_send_string("\n\r");
-	ADMUX = ADMUX ^1;
-	step = ADMUX;
+	ADMUX ^= 1;
+	step   = ADMUX;
+	
 	_delay_ms(TIME_DELAY);
 }

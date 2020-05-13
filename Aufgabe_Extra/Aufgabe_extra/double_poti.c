@@ -5,31 +5,41 @@
 #include "double_poti.h"
 #include "custom_utilities.h"
 #include "USART.h"
+#define X_PIN 1
+#define Y_PIN 0
+#include <avr/interrupt.h>
 
-volatile uint16_t ADCmeasurement = 0;
+volatile int16_t ADC_X = 0;
+volatile int16_t ADC_Y = 0;
 volatile int Button_press = 0;
-uint8_t step = 0;
 
 ISR(ADC_vect) {
-	/*
-		pushing around for 10 Bit
-		to concat bits correctly
-		ADCH		ADCL
-		1111 1111   11
-	*/
-	ADCmeasurement = ADCL | (ADCH << 8);
+	cli();
+	if((ADMUX & 0x0F) == X_PIN) {
+		ADC_X = ADCL | (ADCH << 8);
+		ADMUX = (ADMUX & 0xF0) | Y_PIN;
+	}
+	else {
+		ADC_Y = ADCL | (ADCH << 8);
+		ADMUX = (ADMUX & 0xF0) | X_PIN;
+	}
+	sei();
 }
 
 ISR (INT0_vect) {
 	// toggle on button press
 	Button_press ^= 1;
 }
- 
+
+ISR (TIMER0_COMPA_vect)		// timer overflow interrupt
+{
+	TOGGLE_PIN(PORTD, OUTPUT_PIN);	//Toggle OUTPUT_PIN
+}
+
 void init() {
 	ADMUX = 0;
 	// use AVcc as the reference
-	SET_PIN_HIGH(ADMUX, REFS0); 
-	//SET_PIN_HIGH(ADMUX, ADLAR);
+	SET_PIN_HIGH(ADMUX, REFS0);
 		
 	// 128 prescale for 16Mhz
 	SET_PIN_HIGH(ADCSRA, ADPS2); 
@@ -57,6 +67,7 @@ void init() {
 	    
 	SET_PIN_HIGH(EICRA, ISC00);     // set INT0 to trigger on ANY logic
 	SET_PIN_HIGH(EIMSK, INT0);      // Turns on INT0
+
 		
 	// enable interrupts
 	sei();
@@ -66,6 +77,11 @@ void init() {
 }
 
 void loop() {
+	ADCmeasurement -= 512;
+	
+		
+	}
+	/*
 	char buffer[10];
 	itoa(ADCmeasurement, buffer, 10);
 	if (step&1){
@@ -86,3 +102,4 @@ void loop() {
 	
 	_delay_ms(TIME_DELAY);
 }
+*/

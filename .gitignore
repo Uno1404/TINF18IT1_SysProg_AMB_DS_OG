@@ -1,2 +1,2 @@
-Debug/
-*.componentinfo.xml
+*/Debug/
+*.vs

@@ -20,6 +20,8 @@
 #define START_PORT PORTB
 #define START_NUMBER 3
 
+#define TIME_DELAY 50
+
 void lauflicht_10bit_init();
 void lauflicht_10bit_loop();
 

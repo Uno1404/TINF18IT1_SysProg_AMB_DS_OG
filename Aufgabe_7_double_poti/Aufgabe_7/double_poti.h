@@ -6,9 +6,10 @@
 #ifndef poti_H_
 #define poti_H_
 
-#define FOSC 16000000
-#define BAUD 9600
-#define MYUBRR FOSC/16/BAUD-1
+#define F_CPU	16000000
+#define FOSC	F_CPU
+#define BAUD	9600
+#define MYUBRR	FOSC/16/BAUD-1
 
 #include "stdint.h"
 #include <avr/interrupt.h>

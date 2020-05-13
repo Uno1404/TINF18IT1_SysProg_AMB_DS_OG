@@ -51,26 +51,26 @@ void moveRight(){
 }
 
 void lauflicht_10bit_loop() {
-		_delay_ms(50);
-		//check if the left border is reached and change the direction to right
-		if (BORDER_LEFT){
-			direction = RIGHT;
-		}
-		//change the direction to left if the right border is reached
-		else if (BORDER_RIGHT){
-			direction = LEFT;
-		}
-		//check if transition state is reached. If so: toggle both of the Pins at the border between both of the registers
-		else if (TRANSITION){
-			TOGGLE_PIN(PORTB, 0);
-			TOGGLE_PIN(PORTD,7);
-			_delay_ms(50);
-		}
-		//check the direction
-		if (direction == LEFT){
-			moveLeft();
-		}
-		else if (direction == RIGHT){
-			moveRight();
-		}
+	_delay_ms(TIME_DELAY);
+	//check if the left border is reached and change the direction to right
+	if (BORDER_LEFT){
+		direction = RIGHT;
+	}
+	//change the direction to left if the right border is reached
+	else if (BORDER_RIGHT){
+		direction = LEFT;
+	}
+	//check if transition state is reached. If so: toggle both of the Pins at the border between both of the registers
+	else if (TRANSITION){
+		TOGGLE_PIN(PORTB, 0);
+		TOGGLE_PIN(PORTD,7);
+		_delay_ms(TIME_DELAY);
+	}
+	//check the direction
+	if (direction == LEFT){
+		moveLeft();
+	}
+	else if (direction == RIGHT){
+		moveRight();
+	}
 }

@@ -4,13 +4,16 @@
 
 #include "poti.h"
 
+/*
+	Aufgabe 6:
 
-int main(void)
-{
-	init();
-    /* Replace with your application code */
-    while (1) 
-    {
-		loop();
+	Ausgabe auf 10 Bit mit Poti
+*/
+
+int main(void) {
+	analog_init();
+
+    while (1) {
+		analog_loop();
     }
 }

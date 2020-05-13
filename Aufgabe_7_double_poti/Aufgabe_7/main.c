@@ -4,12 +4,10 @@
 
 #include "double_poti.h"
 
-int main(void)
-{
+int main(void) {
     init();
 	
-    while (1) 
-    {
+    while (1) {
 		loop();
     }
 }

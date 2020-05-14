@@ -11,8 +11,8 @@
 #define KAMMERTON_A		120
 #define KAMMERTON_C		70
 
-#define OUTPUT_PIN		6
 #define PRESCALER		256
+#define OUTPUT_PIN		6
 
 
 void kammerton();

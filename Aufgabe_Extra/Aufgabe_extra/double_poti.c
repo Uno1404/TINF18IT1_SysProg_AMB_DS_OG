@@ -11,7 +11,7 @@
 #define BRIGHTNESS_CONVERSION_FACTOR 4					//10_TO_8_BITS_CONVERSION
 #define START_DIRECTION_RIGHT true						// keep track of direction (true = right, false = left)
 #define Z_THRESHOLD 1000								//THRESHOLD FOR STOPPING
-#define X_THRESHOLD 200
+#define X_THRESHOLD 200									//THRESHOLD FOR CHANGING DIRECTION AND SPEED
 
 volatile int16_t ADC_X = 0;								// keep track of ADC measurement for the x-axis -> speed
 volatile int16_t ADC_Y = 0;								// keep track of ADC measurement for the y-axis -> brightness

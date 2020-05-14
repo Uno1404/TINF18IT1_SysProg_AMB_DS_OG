@@ -19,14 +19,13 @@ ISR (INT1_vect) {
 	OCR0A = KAMMERTON_A;	// PWM for Kammerton A
 }
 
-ISR (TIMER0_COMPA_vect)		// timer overflow interrupt
-{
-	TOGGLE_PIN(PORTD, OUTPUT_PIN);	//Toggle OUTPUT_PIN
+ISR (TIMER0_COMPA_vect)	{	// timer overflow interrupt
+	TOGGLE_PIN(PORTD, OUTPUT_PIN);	// toggle OUTPUT_PIN
 }
 
 void kammerton() {
 	// -- PWM --
-	// set pin 6 as output for the pwm
+	// set pin the output pin for the pwm
 	SET_PIN_OUTPUT(DDRD, OUTPUT_PIN);
 	
 	// PWM for Kammerton A

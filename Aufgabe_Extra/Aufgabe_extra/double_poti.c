@@ -11,6 +11,7 @@
 #define BRIGHTNESS_CONVERSION_FACTOR 4					//10_TO_8_BITS_CONVERSION
 #define START_DIRECTION_RIGHT true						// keep track of direction (true = right, false = left)
 #define Z_THRESHOLD 1000								//THRESHOLD FOR STOPPING
+#define X_THRESHOLD 200
 
 volatile int16_t ADC_X = 0;								// keep track of ADC measurement for the x-axis -> speed
 volatile int16_t ADC_Y = 0;								// keep track of ADC measurement for the y-axis -> brightness
@@ -197,7 +198,7 @@ int16_t last_ADC_X;
 // helper function to simulate variable time delay
 void delay(uint16_t ms) {
 	last_ADC_X = ADC_X;
-	for(uint16_t i = 0; i < ms && (ADC_Z >= Z_THRESHOLD) && (abs(ADC_X - last_ADC_X)<=20*STD_HYSTERESE); i++) {
+	for(uint16_t i = 0; i < ms && (ADC_Z >= Z_THRESHOLD) && (abs(ADC_X - last_ADC_X)<=X_THRESHOLD); i++) {
 		_delay_ms(1);
 	} 	
 }

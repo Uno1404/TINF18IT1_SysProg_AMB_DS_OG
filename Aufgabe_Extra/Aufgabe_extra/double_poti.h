@@ -11,8 +11,9 @@
 #define STD_SPEED		2000	// free running speed
 #define STD_HYSTERESE	10		// threshold to determine direction
 
-#define X_PIN		1	// joystick X
 #define Y_PIN		0	// joystick Y
+#define X_PIN		1	// joystick X
+#define Z_PIN		5	// joystick Z
 #define PWM_PINS	6	// Count of PWM capable pins
 #define PORTS		2	// Count of used PORTS 
 

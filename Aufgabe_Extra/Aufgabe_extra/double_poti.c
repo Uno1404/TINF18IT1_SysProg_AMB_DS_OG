@@ -3,35 +3,36 @@
  */
 
 #include "double_poti.h"
-
 #include "custom_utilities.h"
-
 #include <avr/interrupt.h>
 #include <stdbool.h>
 
-	
-volatile int16_t ADC_X = 0;		// keep track of ADC measurement for the x-axis -> speed
-volatile int16_t ADC_Y = 0;		// keep track of ADC measurement for the y-axis -> brightness
+#define BUDGET 255										// total time for PWM
+#define BRIGHTNESS_CONVERSION_FACTOR 4					//10_TO_8_BITS_CONVERSION
+#define START_DIRECTION_RIGHT true						// keep track of direction (true = right, false = left)
+#define Z_THRESHOLD 1000								//THRESHOLD FOR STOPPING
 
-uint8_t burning_led = 0;		// keep track of the current active led
-bool direction_right = true;	// keep track of direction (true = right, false = left)
-
-volatile uint16_t percent = 10;	// on time for PWM
-uint16_t budget	= 200;			// total time for PWM
-uint16_t counter = 0;			// ticks
+volatile int16_t ADC_X = 0;								// keep track of ADC measurement for the x-axis -> speed
+volatile int16_t ADC_Y = 0;								// keep track of ADC measurement for the y-axis -> brightness
+volatile int16_t ADC_Z = 0;								// keep track of ADC measurement for the z-axis -> pause
+uint8_t burning_led = 0;								// keep track of the current active led
+volatile bool direction_right = START_DIRECTION_RIGHT;
+volatile uint16_t percent = 10;							// on time for PWM
+uint16_t counter = 0;									// ticks
+uint8_t result_counter = 0;								// counter for analog reading
 
 typedef struct {	
-	volatile uint8_t* destination_port;		// address to PORTD or PORTB
-	volatile uint8_t  portBits;				// state of the bits for PORTD and PORTB
-} PORT_CONTAINER;	// byte cache for LED activation to access PORTB/D faster
+	volatile uint8_t* destination_port;					// address to PORTD or PORTB
+	volatile uint8_t  portBits;							// state of the bits for PORTD and PORTB
+} PORT_CONTAINER;										// byte cache for LED activation to access PORTB/D faster
 
 typedef struct {
-	PORT_CONTAINER* targetPortContainer;	// store information about the PORTB/D register
-	uint8_t bit_in_register;				// pin number for the PORTB/D register
+	PORT_CONTAINER* targetPortContainer;				// store information about the PORTB/D register
+	uint8_t bit_in_register;							// pin number for the PORTB/D register
 } PIN;
 
-PIN pins[PWM_PINS];							// PWM Pins
-PORT_CONTAINER portContainerArray[PORTS];	// PORTB and PORTD
+PIN pins[PWM_PINS];										// PWM Pins
+PORT_CONTAINER portContainerArray[PORTS];				// PORTB and PORTD
 
 
 /* sets the pin in the cache byte to HIGH or LOW
@@ -39,7 +40,7 @@ PORT_CONTAINER portContainerArray[PORTS];	// PORTB and PORTD
 	level = HIGH or LOW
 */
 inline void set_pin_active(uint8_t id, bool state) {
-	PIN* target_pin = pins + id;	// get the correct pin
+	PIN* target_pin = pins + id;						// get the correct pin
 	if (state) {
 		target_pin->targetPortContainer->portBits |=  (target_pin->bit_in_register);	// sets the specified bit accordingly
 	}
@@ -97,7 +98,7 @@ void pwm_pins_init() {
 	}
 	
 	// and set the first LED on
-	set_pin_active(0, true);
+	set_pin_active(burning_led, true);
 }
 
 
@@ -123,7 +124,7 @@ void analog_init() {
 	// Enable the ADC (Analog Device Converter)
 	SET_PIN_HIGH(ADCSRA, ADEN);
 	
-	// Enable Interrupts
+	// Enable ADC Interrupts
 	SET_PIN_HIGH(ADCSRA, ADIE);
 
 	// Start the ADC conversion
@@ -132,14 +133,30 @@ void analog_init() {
 
 // Interrupt: Analog read
 ISR(ADC_vect) {
-	if ((ADMUX & 0x0F) == X_PIN) {			// if X_PIN was read
-		ADC_X = (ADCL | (ADCH << 8)) - 512;	// set ADC_X and normalize it to 0 by subtracting 512 (middle pos = 0)
-		ADMUX = (ADMUX & 0xF0) | Y_PIN;		// set ADMUX to PIN_Y
+	uint16_t result = (ADCL | (ADCH << 8));
+	if (result_counter==1) //to prevent ADC lock 
+	/*If these bits are changed during a conversion,
+	the change will not go in effect until this conversion
+	is complete (ADIF in ADCSRA is set).*/
+	{
+		if ((ADMUX & 0x0F) == X_PIN) {						// if X_PIN was read
+			ADC_X = result - 512;							// set ADC_X and normalize it to 0 by subtracting 512 (middle pos = 0)
+			ADMUX = (ADMUX & 0xF0) | Z_PIN;					// set ADMUX to PIN_Z
+		}
+		else if ((ADMUX & 0x0F) == Z_PIN) {					// if Z_PIN was read
+			ADC_Z = result;									// set ADC_Z
+			ADMUX = (ADMUX & 0xF0) | Y_PIN;					// set ADMUX to PIN_Y
+		}
+		else {												// else Y_PIN was read
+			ADC_Y = result;									// set ADC_Y
+			percent = ADC_Y / BRIGHTNESS_CONVERSION_FACTOR;	// scale the brightness
+			ADMUX = (ADMUX & 0xF0) | X_PIN;					// set ADMUX to PIN_X
+		}
 	}
-	else {									// else Y_PIN was read
-		ADC_Y = (ADCL | (ADCH << 8));		// set ADC_Y
-		percent = ADC_Y / 5;				// scale the brightness
-		ADMUX = (ADMUX & 0xF0) | X_PIN;		// set ADMUX to PIN_X
+	result_counter++;
+	if (result_counter>1)
+	{
+		result_counter = 0;
 	}
 }
 
@@ -147,15 +164,17 @@ ISR(ADC_vect) {
 // Interrupt: Timer overflow -> PWM 
 ISR (TIMER1_COMPA_vect)	{
 	counter++;
-	if(counter >= budget)
+	if(counter >= BUDGET)
 		counter = 0;
 	uint8_t targetMode = (counter >= percent) ? LOW:HIGH;
 	for (uint8_t i = 0; i < PORTS; ++i) {	
 		if(targetMode == HIGH) {
-			*portContainerArray[i].destination_port = portContainerArray[i].portBits;		// sets the specified bit for the PORTB/D Register			
+			// sets the specified bit for the PORTB/D Register
+			*portContainerArray[i].destination_port = portContainerArray[i].portBits;			
 		}
 		else {
-			*portContainerArray[i].destination_port &= ~(portContainerArray[i].portBits);	// clears the specified bit for the PORTB/D Register
+			// clears the specified bit for the PORTB/D Register
+			*portContainerArray[i].destination_port &= ~(portContainerArray[i].portBits);
 		}
 	}
 }
@@ -176,7 +195,7 @@ void init() {
 
 // helper function to simulate variable time delay
 void delay(uint16_t ms) {
-	for(uint16_t i = 0; i < ms; ++i) {
+	for(uint16_t i = 0; i < ms && (ADC_Z >= Z_THRESHOLD); i++) {
 		_delay_ms(1);
 	} 	
 }
@@ -184,11 +203,15 @@ void delay(uint16_t ms) {
 
 // main loop
 void loop() {
-	uint16_t speed;		// local speed variable 
+	if (ADC_Z < Z_THRESHOLD)
+	{
+		return;
+	}
+	uint16_t speed;		// local speed variable
 	// determine direction and speed
 	if (ADC_X < -STD_HYSTERESE) {
 		direction_right = false;
-		speed = -STD_SPEED / (ADC_X / STD_HYSTERESE);
+		speed = STD_SPEED / (-ADC_X / STD_HYSTERESE);
 	}
 	else if (ADC_X > STD_HYSTERESE) {
 		direction_right = true;
@@ -197,7 +220,6 @@ void loop() {
 	else { // if the measurement ADC_X is in between the threshold set speed to STD_SPEED
 		speed =  STD_SPEED;
 	}
-	
 	// disable the current LED
 	set_pin_active(burning_led, false); 
 	// determine the next LED
@@ -209,7 +231,6 @@ void loop() {
 	}
 	// enable the current LED
 	set_pin_active(burning_led, true);
-	
 	// simulate the speed
 	delay(speed);
 }

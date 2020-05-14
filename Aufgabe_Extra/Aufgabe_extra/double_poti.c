@@ -129,7 +129,8 @@ ISR (TIMER1_COMPA_vect)	{	// timer overflow interrupt
 }
 
 void analog_init() {	
-	ADMUX = 5;
+	// A0
+	ADMUX = 0;
 	// use AVcc as the reference
 	SET_PIN_HIGH(ADMUX, REFS0);
 	
@@ -159,9 +160,6 @@ void init() {
 	
 	// init pwm
 	pwm_pins_init();	
-
-	// init serial
-	usart_init();
 	
 	// enable interrupts
 	sei();

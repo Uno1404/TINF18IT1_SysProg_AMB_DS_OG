@@ -193,13 +193,14 @@ void init() {
 	sei();
 }
 
+int16_t last_ADC_X;
 // helper function to simulate variable time delay
 void delay(uint16_t ms) {
-	for(uint16_t i = 0; i < ms && (ADC_Z >= Z_THRESHOLD); i++) {
+	last_ADC_X = ADC_X;
+	for(uint16_t i = 0; i < ms && (ADC_Z >= Z_THRESHOLD) && (abs(ADC_X - last_ADC_X)<=20*STD_HYSTERESE); i++) {
 		_delay_ms(1);
 	} 	
 }
-
 
 // main loop
 void loop() {

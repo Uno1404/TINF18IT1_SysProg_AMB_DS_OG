@@ -15,7 +15,7 @@
 int main(void) {
 	lauflicht_10bit_init();
 	
-	while(1){
+	while(1) {
 		lauflicht_10bit_loop();
 	}
 }

@@ -88,54 +88,54 @@ Disassembly of section .text:
 
 char direction = LEFT;
 
-void lauflicht_10bit_init(){
+void lauflicht_10bit_init() {
 	//DDRB = 0b00001111;
-	SET_PIN_OUTPUT(DDRB, 3);
+	SET_PIN_OUTPUT(DDRB, DDB3);
   96:	23 9a       	sbi	0x04, 3	; 4
-	SET_PIN_OUTPUT(DDRB, 2);
+	SET_PIN_OUTPUT(DDRB, DDB2);
   98:	22 9a       	sbi	0x04, 2	; 4
-	SET_PIN_OUTPUT(DDRB, 1);
+	SET_PIN_OUTPUT(DDRB, DDB1);
   9a:	21 9a       	sbi	0x04, 1	; 4
-	SET_PIN_OUTPUT(DDRB, 0);
+	SET_PIN_OUTPUT(DDRB, DDB0);
   9c:	20 9a       	sbi	0x04, 0	; 4
 	
 	//DDRD = 0b11111100;
-	SET_PIN_OUTPUT(DDRD, 7);
+	SET_PIN_OUTPUT(DDRD, DDD7);
   9e:	57 9a       	sbi	0x0a, 7	; 10
-	SET_PIN_OUTPUT(DDRD, 6);
+	SET_PIN_OUTPUT(DDRD, DDD6);
   a0:	56 9a       	sbi	0x0a, 6	; 10
-	SET_PIN_OUTPUT(DDRD, 5);
+	SET_PIN_OUTPUT(DDRD, DDD5);
   a2:	55 9a       	sbi	0x0a, 5	; 10
-	SET_PIN_OUTPUT(DDRD, 4);
+	SET_PIN_OUTPUT(DDRD, DDD4);
   a4:	54 9a       	sbi	0x0a, 4	; 10
-	SET_PIN_OUTPUT(DDRD, 3);
+	SET_PIN_OUTPUT(DDRD, DDD3);
   a6:	53 9a       	sbi	0x0a, 3	; 10
-	SET_PIN_OUTPUT(DDRD, 2);
+	SET_PIN_OUTPUT(DDRD, DDD2);
   a8:	52 9a       	sbi	0x0a, 2	; 10
 	
 	//initial state: Turn on the LED at the right border and set the floating direction to LEFT ('l')
-	SET_PIN_HIGH(START_PORT, START_NUMBER);
-  aa:	2b 9a       	sbi	0x05, 3	; 5
+	SET_PIN_HIGH(START_PORT, START_PIN);
+  aa:	5b 9a       	sbi	0x0b, 3	; 11
   ac:	08 95       	ret
 
 000000ae <moveLeft>:
 }
 
-void moveLeft(){
+void moveLeft() {
 	//if PortB is 0, the light is at register d, and vice versa. (PortD can not be 0 because the least significant bit of it is a status bit which we may not change)
-	if (PORTB == 0){
+	if (PORTB == 0) {
   ae:	85 b1       	in	r24, 0x05	; 5
   b0:	81 11       	cpse	r24, r1
   b2:	05 c0       	rjmp	.+10     	; 0xbe <moveLeft+0x10>
 		//after the bitshift we have to add 1 again to maintain the status of the lsb
-		PORTD = (PORTD >> 1) +1;
+		PORTD = (PORTD >> 1) + 1;
   b4:	8b b1       	in	r24, 0x0b	; 11
   b6:	86 95       	lsr	r24
   b8:	8f 5f       	subi	r24, 0xFF	; 255
   ba:	8b b9       	out	0x0b, r24	; 11
   bc:	08 95       	ret
 	}
-	else if (PORTD == 1){
+	else if (PORTD == 1) {
   be:	8b b1       	in	r24, 0x0b	; 11
   c0:	81 30       	cpi	r24, 0x01	; 1
   c2:	19 f4       	brne	.+6      	; 0xca <moveLeft+0x1c>
@@ -149,20 +149,20 @@ void moveLeft(){
 	}
 }
 
-void moveRight(){
-	if (PORTB == 0){
+void moveRight() {
+	if (PORTB == 0) {
   cc:	85 b1       	in	r24, 0x05	; 5
   ce:	81 11       	cpse	r24, r1
   d0:	05 c0       	rjmp	.+10     	; 0xdc <moveRight+0x10>
 		//when bitshifting to the left we first have to nullify the status bit, because we would shift it which would cause unexpected results. After shifting we add 1 again
-		PORTD = ((PORTD-1) << 1) +1;
+		PORTD = ((PORTD-1) << 1) + 1;
   d2:	8b b1       	in	r24, 0x0b	; 11
   d4:	88 0f       	add	r24, r24
   d6:	81 50       	subi	r24, 0x01	; 1
   d8:	8b b9       	out	0x0b, r24	; 11
   da:	08 95       	ret
 	}
-	else if (PORTD == 1){
+	else if (PORTD == 1) {
   dc:	8b b1       	in	r24, 0x0b	; 11
   de:	81 30       	cpi	r24, 0x01	; 1
   e0:	19 f4       	brne	.+6      	; 0xe8 <moveRight+0x1c>
@@ -180,8 +180,8 @@ void moveRight(){
 
 	__builtin_avr_delay_cycles(__ticks_dc);
   ea:	2f ef       	ldi	r18, 0xFF	; 255
-  ec:	80 e7       	ldi	r24, 0x70	; 112
-  ee:	92 e0       	ldi	r25, 0x02	; 2
+  ec:	81 ee       	ldi	r24, 0xE1	; 225
+  ee:	94 e0       	ldi	r25, 0x04	; 4
   f0:	21 50       	subi	r18, 0x01	; 1
   f2:	80 40       	sbci	r24, 0x00	; 0
   f4:	90 40       	sbci	r25, 0x00	; 0
@@ -193,7 +193,7 @@ void moveRight(){
 void lauflicht_10bit_loop() {
 	_delay_ms(TIME_DELAY);
 	//check if the left border is reached and change the direction to right
-	if (BORDER_LEFT){
+	if (BORDER_LEFT) {
   fc:	8b b1       	in	r24, 0x0b	; 11
   fe:	85 30       	cpi	r24, 0x05	; 5
  100:	21 f4       	brne	.+8      	; 0x10a <lauflicht_10bit_loop+0x20>
@@ -203,7 +203,7 @@ void lauflicht_10bit_loop() {
  108:	26 c0       	rjmp	.+76     	; 0x156 <lauflicht_10bit_loop+0x6c>
 	}
 	//change the direction to left if the right border is reached
-	else if (BORDER_RIGHT){
+	else if (BORDER_RIGHT) {
  10a:	85 b1       	in	r24, 0x05	; 5
  10c:	88 30       	cpi	r24, 0x08	; 8
  10e:	21 f4       	brne	.+8      	; 0x118 <lauflicht_10bit_loop+0x2e>
@@ -213,25 +213,25 @@ void lauflicht_10bit_loop() {
  116:	1a c0       	rjmp	.+52     	; 0x14c <lauflicht_10bit_loop+0x62>
 	}
 	//check if transition state is reached. If so: toggle both of the Pins at the border between both of the registers
-	else if (TRANSITION){
+	else if (TRANSITION) {
  118:	85 b1       	in	r24, 0x05	; 5
  11a:	9b b1       	in	r25, 0x0b	; 11
  11c:	90 78       	andi	r25, 0x80	; 128
  11e:	81 70       	andi	r24, 0x01	; 1
  120:	89 2b       	or	r24, r25
  122:	81 f0       	breq	.+32     	; 0x144 <lauflicht_10bit_loop+0x5a>
-		TOGGLE_PIN(PORTB, 0);
+		TOGGLE_PIN(PORTB, PORTB0);
  124:	95 b1       	in	r25, 0x05	; 5
  126:	81 e0       	ldi	r24, 0x01	; 1
  128:	89 27       	eor	r24, r25
  12a:	85 b9       	out	0x05, r24	; 5
-		TOGGLE_PIN(PORTD,7);
+		TOGGLE_PIN(PORTD, PORTD7);
  12c:	8b b1       	in	r24, 0x0b	; 11
  12e:	80 58       	subi	r24, 0x80	; 128
  130:	8b b9       	out	0x0b, r24	; 11
  132:	2f ef       	ldi	r18, 0xFF	; 255
- 134:	80 e7       	ldi	r24, 0x70	; 112
- 136:	92 e0       	ldi	r25, 0x02	; 2
+ 134:	81 ee       	ldi	r24, 0xE1	; 225
+ 136:	94 e0       	ldi	r25, 0x04	; 4
  138:	21 50       	subi	r18, 0x01	; 1
  13a:	80 40       	sbci	r24, 0x00	; 0
  13c:	90 40       	sbci	r25, 0x00	; 0
@@ -241,7 +241,7 @@ void lauflicht_10bit_loop() {
 		_delay_ms(TIME_DELAY);
 	}
 	//check the direction
-	if (direction == LEFT){
+	if (direction == LEFT) {
  144:	80 91 00 01 	lds	r24, 0x0100	; 0x800100 <__data_start>
  148:	8c 36       	cpi	r24, 0x6C	; 108
  14a:	19 f4       	brne	.+6      	; 0x152 <lauflicht_10bit_loop+0x68>
@@ -249,7 +249,7 @@ void lauflicht_10bit_loop() {
  14c:	0e 94 57 00 	call	0xae	; 0xae <moveLeft>
  150:	08 95       	ret
 	}
-	else if (direction == RIGHT){
+	else if (direction == RIGHT) {
  152:	82 37       	cpi	r24, 0x72	; 114
  154:	11 f4       	brne	.+4      	; 0x15a <lauflicht_10bit_loop+0x70>
 		moveRight();
@@ -265,7 +265,7 @@ int main(void) {
 	lauflicht_10bit_init();
  15c:	0e 94 4b 00 	call	0x96	; 0x96 <lauflicht_10bit_init>
 	
-	while(1){
+	while(1) {
 		lauflicht_10bit_loop();
  160:	0e 94 75 00 	call	0xea	; 0xea <lauflicht_10bit_loop>
  164:	fd cf       	rjmp	.-6      	; 0x160 <main+0x4>

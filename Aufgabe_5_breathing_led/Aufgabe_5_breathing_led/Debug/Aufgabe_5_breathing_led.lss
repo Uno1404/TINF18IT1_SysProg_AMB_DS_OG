@@ -75,10 +75,10 @@ Disassembly of section .text:
 
 #include "breathingled.h"
 
-void startup(){
-	//sets PB1 as output
-	SET_PIN_HIGH(DDRB,DDB1);
-  80:	21 9a       	sbi	0x04, 1	; 4
+void startup() {
+	//sets PD6 as output
+	SET_PIN_OUTPUT(DDRD, DDD6);	
+  80:	56 9a       	sbi	0x0a, 6	; 10
 	
 	//sets PWM to 0
 	OCR0A = 0;
@@ -114,7 +114,7 @@ void startup(){
 000000a4 <mainloop>:
 }
 
-void mainloop(){
+void mainloop() {
 	//turning on the LED
 	for(int i = 0; i <= MAXI; i++){
   a4:	80 e0       	ldi	r24, 0x00	; 0
@@ -136,7 +136,7 @@ void mainloop(){
 	SET_PIN_HIGH(TCCR0B, CS01);
 }
 
-void mainloop(){
+void mainloop() {
 	//turning on the LED
 	for(int i = 0; i <= MAXI; i++){
   b6:	01 96       	adiw	r24, 0x01	; 1
@@ -177,11 +177,11 @@ void mainloop(){
 
 #include "breathingled.h"
 
-int main(void){
+int main(void) {
 	startup();
   d8:	0e 94 40 00 	call	0x80	; 0x80 <startup>
 	
-	while(1){
+	while(1) {
 		mainloop();
   dc:	0e 94 52 00 	call	0xa4	; 0xa4 <mainloop>
   e0:	fd cf       	rjmp	.-6      	; 0xdc <main+0x4>

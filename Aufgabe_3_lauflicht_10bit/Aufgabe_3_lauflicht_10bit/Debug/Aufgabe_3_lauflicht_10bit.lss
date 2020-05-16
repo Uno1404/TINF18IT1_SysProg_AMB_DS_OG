@@ -21,11 +21,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   8 .debug_frame  00000078  00000000  00000000  0000154c  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    00000426  00000000  00000000  000015c4  2**0
+  9 .debug_str    0000041e  00000000  00000000  000015c4  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    00000090  00000000  00000000  000019ea  2**0
+ 10 .debug_loc    00000090  00000000  00000000  000019e2  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000038  00000000  00000000  00001a7a  2**0
+ 11 .debug_ranges 00000038  00000000  00000000  00001a72  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -115,7 +115,7 @@ void lauflicht_10bit_init() {
 	
 	//initial state: Turn on the LED at the right border and set the floating direction to LEFT ('l')
 	SET_PIN_HIGH(START_PORT, START_PIN);
-  aa:	5b 9a       	sbi	0x0b, 3	; 11
+  aa:	2b 9a       	sbi	0x05, 3	; 5
   ac:	08 95       	ret
 
 000000ae <moveLeft>:

@@ -11,8 +11,8 @@
 #define LEFT	'l'
 #define RIGHT	'r'
 
-#define START_PORT	PORTD
-#define START_PIN	PORTD3
+#define START_PORT	PORTB
+#define START_PIN	PORTB3
 
 #define PIN_RIGHT	PORTD2
 #define PIN_LEFT	PORTB3

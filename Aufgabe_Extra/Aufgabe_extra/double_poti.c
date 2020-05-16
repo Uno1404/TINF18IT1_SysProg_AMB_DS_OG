@@ -3,6 +3,15 @@
  */
 
 #include "double_poti.h"
+#include "custom_utilities.h"
+#include <avr/interrupt.h>
+#include <stdbool.h>
+
+#define BUDGET 255										// total time for PWM
+#define BRIGHTNESS_CONVERSION_FACTOR 4					//10_TO_8_BITS_CONVERSION
+#define START_DIRECTION_RIGHT true						// keep track of direction (true = right, false = left)
+#define Z_THRESHOLD 1000								//THRESHOLD FOR STOPPING
+#define X_THRESHOLD 200									//THRESHOLD FOR CHANGING DIRECTION AND SPEED
 
 volatile int16_t ADC_X = 0;								// keep track of ADC measurement for the x-axis -> speed
 volatile int16_t ADC_Y = 0;								// keep track of ADC measurement for the y-axis -> brightness
@@ -85,12 +94,12 @@ void pwm_pins_init() {
 	DDRB |= 0b00001110;
 	
 	// turn all LEDS off
-	for (int i = 0; i < PWM_PINS; i++) {
+	for (int i = 0; i < PWM_PINS; ++i) {
 		set_pin_active(i, false);
 	}
 	
 	// and set the first LED on
-	set_pin_active(START_LED, true);
+	set_pin_active(burning_led, true);
 }
 
 
@@ -113,7 +122,7 @@ void analog_init() {
 	// LOW (0) for free running mode
 	ADCSRB = LOW;
 
-	// Enable the ADC (Analog Digital Converter)
+	// Enable the ADC (Analog Device Converter)
 	SET_PIN_HIGH(ADCSRA, ADEN);
 	
 	// Enable ADC Interrupts
@@ -126,7 +135,7 @@ void analog_init() {
 // Interrupt: Analog read
 ISR(ADC_vect) {
 	uint16_t result = (ADCL | (ADCH << 8));
-	if (result_counter==1) // to prevent ADC lock 
+	if (result_counter==1) //to prevent ADC lock 
 	/*If these bits are changed during a conversion,
 	the change will not go in effect until this conversion
 	is complete (ADIF in ADCSRA is set).*/
@@ -159,7 +168,7 @@ ISR (TIMER1_COMPA_vect)	{
 	if(counter >= BUDGET)
 		counter = 0;
 	uint8_t targetMode = (counter >= percent) ? LOW:HIGH;
-	for (uint8_t i = 0; i < PORTS; i++) {	
+	for (uint8_t i = 0; i < PORTS; ++i) {	
 		if(targetMode == HIGH) {
 			// sets the specified bit for the PORTB/D Register
 			*portContainerArray[i].destination_port = portContainerArray[i].portBits;			
